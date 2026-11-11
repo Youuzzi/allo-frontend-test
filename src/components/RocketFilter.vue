@@ -9,12 +9,17 @@
       density="comfortable"
       hide-details
       clearable
+      @click:clear="clearSearch"
     />
   </div>
 </template>
 
 <script setup lang="ts">
 const search = defineModel<string>({ required: true });
+
+function clearSearch() {
+  search.value = "";
+}
 </script>
 
 <style scoped>

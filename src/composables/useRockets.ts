@@ -11,7 +11,7 @@ let hasLoaded = false;
 let requestPromise: Promise<void> | null = null;
 
 const filteredRockets = computed(() => {
-  const keywords = searchQuery.value
+  const keywords = String(searchQuery.value ?? "")
     .trim()
     .toLowerCase()
     .split(/\s+/)
