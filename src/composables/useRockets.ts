@@ -11,18 +11,26 @@ let hasLoaded = false;
 let requestPromise: Promise<void> | null = null;
 
 const filteredRockets = computed(() => {
-  const query = searchQuery.value.trim().toLowerCase();
+  const keywords = searchQuery.value
+    .trim()
+    .toLowerCase()
+    .split(/\s+/)
+    .filter(Boolean);
 
-  if (!query) {
+  if (keywords.length === 0) {
     return rockets.value;
   }
 
   return rockets.value.filter((rocket) => {
-    return (
-      rocket.name.toLowerCase().includes(query) ||
-      rocket.description.toLowerCase().includes(query) ||
-      (rocket.country?.toLowerCase().includes(query) ?? false)
-    );
+    const searchableText = [
+      rocket.name,
+      rocket.description,
+      rocket.country ?? "",
+    ]
+      .join(" ")
+      .toLowerCase();
+
+    return keywords.every((keyword) => searchableText.includes(keyword));
   });
 });
 
