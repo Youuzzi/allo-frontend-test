@@ -9,8 +9,14 @@ const VTextFieldStub = defineComponent({
       type: String,
       default: "",
     },
-    label: String,
-    placeholder: String,
+    label: {
+      type: String,
+      default: "",
+    },
+    placeholder: {
+      type: String,
+      default: "",
+    },
     clearable: Boolean,
   },
   emits: ["update:modelValue", "click:clear"],
@@ -77,18 +83,9 @@ describe("RocketFilter", () => {
     expect(wrapper.emitted("update:modelValue")).toEqual([[""]]);
   });
 
-  it("does not render the clear button when clearable is disabled", () => {
-    const wrapper = mount(RocketFilter, {
-      props: {
-        modelValue: "",
-      },
-      global: {
-        stubs: {
-          VTextField: VTextFieldStub,
-        },
-      },
-    });
+  it("passes the clearable prop to the text field", () => {
+    const wrapper = mountRocketFilter();
 
-    expect(wrapper.find('[data-testid="clear-button"]').exists()).toBe(true);
+    expect(wrapper.findComponent(VTextFieldStub).props("clearable")).toBe(true);
   });
 });
