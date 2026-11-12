@@ -16,14 +16,20 @@
       >
         <template #error>
           <div class="image-fallback">
-            <v-icon icon="mdi-rocket-launch-outline" size="56" />
+            <v-icon
+              icon="mdi-rocket-launch-outline"
+              size="56"
+            />
             <span>Image unavailable</span>
           </div>
         </template>
 
         <template #placeholder>
           <div class="image-fallback">
-            <v-progress-circular indeterminate color="primary" />
+            <v-progress-circular
+              indeterminate
+              color="primary"
+            />
           </div>
         </template>
       </v-img>
