@@ -4,7 +4,11 @@
       <!-- Header -->
       <header class="catalogue-header mb-10">
         <div class="d-flex align-center ga-2 mb-4">
-          <v-icon icon="mdi-rocket-launch" color="primary" size="small" />
+          <v-icon
+            icon="mdi-rocket-launch"
+            color="primary"
+            size="small"
+          />
           <span class="text-overline font-weight-bold text-primary">
             SPACE EXPLORATION
           </span>
@@ -35,13 +39,19 @@
         >
           <RocketFilter v-model="searchQuery" />
 
-          <span class="text-body-2 text-medium-emphasis">
+          <span
+            v-if="rockets.length > 0"
+            class="text-body-2 text-medium-emphasis"
+          >
             {{ filteredRockets.length }} rocket(s) found
           </span>
         </div>
 
         <!-- Loading -->
-        <div v-if="loading && rockets.length === 0" class="state-container">
+        <div
+          v-if="loading && rockets.length === 0"
+          class="state-container"
+        >
           <v-progress-circular
             indeterminate
             color="primary"
@@ -61,7 +71,9 @@
           rounded="lg"
           class="mb-6"
         >
-          <div class="font-weight-bold mb-1">Unable to load rockets</div>
+          <div class="font-weight-bold mb-1">
+            Unable to load rockets
+          </div>
 
           <div class="text-body-2 mb-3">
             {{ error }}
@@ -95,14 +107,19 @@
           </div>
 
           <!-- Empty search result -->
-          <div v-else class="state-container">
+          <div
+            v-else
+            class="state-container"
+          >
             <v-icon
               icon="mdi-rocket-launch-outline"
               size="56"
               color="medium-emphasis"
             />
 
-            <h2 class="text-h6 font-weight-bold mt-4">No rockets found</h2>
+            <h2 class="text-h6 font-weight-bold mt-4">
+              No rockets found
+            </h2>
 
             <p class="text-body-2 text-medium-emphasis mt-2">
               Try another search term or add a custom rocket.
@@ -134,7 +151,19 @@
           rounded="lg"
           class="mt-5"
         >
-          Unable to refresh rocket data: {{ error }}
+          <div class="text-body-2 mb-3">
+            Unable to refresh rocket data: {{ error }}
+          </div>
+
+          <v-btn
+            color="warning"
+            variant="flat"
+            size="small"
+            prepend-icon="mdi-refresh"
+            @click="fetchRockets(true)"
+          >
+            Try Again
+          </v-btn>
         </v-alert>
       </section>
 
