@@ -65,24 +65,13 @@
           cols="12"
           lg="7"
         >
-          <v-img
-            :src="rocket.imageUrl || undefined"
+          <RocketImage
+            :src="rocket.imageUrl"
             :alt="rocket.name"
-            height="420"
-            cover
+            :height="420"
+            :icon-size="80"
             rounded="xl"
-            class="detail-image"
-          >
-            <template #error>
-              <div class="image-fallback">
-                <v-icon
-                  icon="mdi-rocket-launch-outline"
-                  size="80"
-                />
-                <span>Image unavailable</span>
-              </div>
-            </template>
-          </v-img>
+          />
         </v-col>
 
         <v-col
@@ -242,21 +231,6 @@ watch(
   flex-direction: column;
   align-items: center;
   justify-content: center;
-}
-
-.detail-image {
-  background: #f1f3f5;
-}
-
-.image-fallback {
-  display: flex;
-  height: 100%;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  color: #7b8491;
-  background: #f1f3f5;
 }
 
 .detail-description {

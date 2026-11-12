@@ -7,32 +7,11 @@
     :to="`/rockets/${rocket.id}`"
   >
     <div class="rocket-image-wrapper">
-      <v-img
-        :src="rocket.imageUrl || undefined"
+      <RocketImage
+        :src="rocket.imageUrl"
         :alt="rocket.name"
-        height="220"
-        cover
-        class="rocket-image"
-      >
-        <template #error>
-          <div class="image-fallback">
-            <v-icon
-              icon="mdi-rocket-launch-outline"
-              size="56"
-            />
-            <span>Image unavailable</span>
-          </div>
-        </template>
-
-        <template #placeholder>
-          <div class="image-fallback">
-            <v-progress-circular
-              indeterminate
-              color="primary"
-            />
-          </div>
-        </template>
-      </v-img>
+        :height="220"
+      />
 
       <v-chip
         v-if="rocket.isCustom"
@@ -93,22 +72,6 @@ defineProps<{
 .rocket-image-wrapper {
   position: relative;
   overflow: hidden;
-}
-
-.rocket-image {
-  background: #f1f3f5;
-}
-
-.image-fallback {
-  display: flex;
-  height: 100%;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  color: #7b8491;
-  background: #f1f3f5;
-  font-size: 13px;
 }
 
 .custom-chip {
