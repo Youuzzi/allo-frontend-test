@@ -1,37 +1,70 @@
 <template>
   <v-container class="py-8 py-md-12">
-    <v-btn to="/" variant="text" prepend-icon="mdi-arrow-left" class="mb-8">
+    <v-btn
+      to="/"
+      variant="text"
+      prepend-icon="mdi-arrow-left"
+      class="mb-8"
+    >
       Back to Catalogue
     </v-btn>
 
     <!-- Loading -->
-    <div v-if="loading" class="state-container">
-      <v-progress-circular indeterminate color="primary" size="48" />
+    <div
+      v-if="loading"
+      class="state-container"
+    >
+      <v-progress-circular
+        indeterminate
+        color="primary"
+        size="48"
+      />
       <p class="text-body-1 text-medium-emphasis mt-4">
         Loading rocket details...
       </p>
     </div>
 
     <!-- Error -->
-    <v-alert v-else-if="error" type="error" variant="tonal" rounded="lg">
-      <div class="font-weight-bold mb-2">Unable to load rocket details</div>
+    <v-alert
+      v-else-if="error"
+      type="error"
+      variant="tonal"
+      rounded="lg"
+    >
+      <div class="font-weight-bold mb-2">
+        Unable to load rocket details
+      </div>
 
-      <p class="mb-4">{{ error }}</p>
+      <p class="mb-4">
+        {{ error }}
+      </p>
 
-      <v-btn color="error" variant="flat" @click="loadRocket">
+      <v-btn
+        color="error"
+        variant="flat"
+        @click="loadRocket"
+      >
         Try Again
       </v-btn>
     </v-alert>
 
     <!-- Rocket not found -->
-    <v-alert v-else-if="!rocket" type="warning" variant="tonal" rounded="lg">
+    <v-alert
+      v-else-if="!rocket"
+      type="warning"
+      variant="tonal"
+      rounded="lg"
+    >
       Rocket not found.
     </v-alert>
 
     <!-- Rocket details -->
     <div v-else>
       <v-row>
-        <v-col cols="12" lg="7">
+        <v-col
+          cols="12"
+          lg="7"
+        >
           <v-img
             :src="rocket.imageUrl || undefined"
             :alt="rocket.name"
@@ -42,16 +75,26 @@
           >
             <template #error>
               <div class="image-fallback">
-                <v-icon icon="mdi-rocket-launch-outline" size="80" />
+                <v-icon
+                  icon="mdi-rocket-launch-outline"
+                  size="80"
+                />
                 <span>Image unavailable</span>
               </div>
             </template>
           </v-img>
         </v-col>
 
-        <v-col cols="12" lg="5">
+        <v-col
+          cols="12"
+          lg="5"
+        >
           <div class="d-flex align-center ga-2 mb-4">
-            <v-chip color="primary" variant="tonal" size="small">
+            <v-chip
+              color="primary"
+              variant="tonal"
+              size="small"
+            >
               {{ rocket.isCustom ? "Custom Rocket" : "SpaceX Rocket" }}
             </v-chip>
           </div>
@@ -68,25 +111,35 @@
 
           <v-divider class="my-8" />
 
-          <h2 class="text-h6 font-weight-bold mb-5">Rocket Information</h2>
+          <h2 class="text-h6 font-weight-bold mb-5">
+            Rocket Information
+          </h2>
 
           <div class="detail-info">
             <div class="info-item">
-              <v-icon icon="mdi-currency-usd" color="primary" />
+              <v-icon
+                icon="mdi-currency-usd"
+                color="primary"
+              />
               <div>
                 <div class="text-caption text-medium-emphasis">
                   Cost per Launch
                 </div>
                 <div class="font-weight-medium">
-                  {{ rocket.launchCost || "Not available" }}
+                  {{ formatLaunchCost(rocket.launchCost) }}
                 </div>
               </div>
             </div>
 
             <div class="info-item">
-              <v-icon icon="mdi-earth" color="primary" />
+              <v-icon
+                icon="mdi-earth"
+                color="primary"
+              />
               <div>
-                <div class="text-caption text-medium-emphasis">Country</div>
+                <div class="text-caption text-medium-emphasis">
+                  Country
+                </div>
                 <div class="font-weight-medium">
                   {{ rocket.country || "Not available" }}
                 </div>
@@ -94,13 +147,16 @@
             </div>
 
             <div class="info-item">
-              <v-icon icon="mdi-calendar" color="primary" />
+              <v-icon
+                icon="mdi-calendar"
+                color="primary"
+              />
               <div>
                 <div class="text-caption text-medium-emphasis">
                   First Flight
                 </div>
                 <div class="font-weight-medium">
-                  {{ rocket.firstFlight || "Not available" }}
+                  {{ formatDate(rocket.firstFlight) }}
                 </div>
               </div>
             </div>
@@ -115,7 +171,11 @@
 import { ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { getRocketById } from "@/services/rocketService";
-import { useRockets } from "@/composables/useRockets";
+import {
+  CUSTOM_ROCKET_ID_PREFIX,
+  useRockets,
+} from "@/composables/useRockets";
+import { formatDate, formatLaunchCost } from "@/utils/format";
 import type { Rocket } from "@/types/rocket";
 
 const route = useRoute();
@@ -125,8 +185,12 @@ const rocket = ref<Rocket | null>(null);
 const loading = ref(false);
 const error = ref<string | null>(null);
 
+// Ignores responses of outdated requests (e.g. fast navigation between rockets).
+let latestRequestId = 0;
+
 async function loadRocket() {
   const id = String(route.params.id);
+  const requestId = ++latestRequestId;
 
   loading.value = true;
   error.value = null;
@@ -141,13 +205,26 @@ async function loadRocket() {
       return;
     }
 
+    // Custom rockets are lost on reload and do not exist on the API.
+    if (id.startsWith(CUSTOM_ROCKET_ID_PREFIX)) {
+      return;
+    }
+
     // Fetch from API when the rocket is not in client state.
-    rocket.value = await getRocketById(id);
+    const fetchedRocket = await getRocketById(id);
+
+    if (requestId === latestRequestId) {
+      rocket.value = fetchedRocket;
+    }
   } catch (err) {
-    error.value =
-      err instanceof Error ? err.message : "An unexpected error occurred.";
+    if (requestId === latestRequestId) {
+      error.value =
+        err instanceof Error ? err.message : "An unexpected error occurred.";
+    }
   } finally {
-    loading.value = false;
+    if (requestId === latestRequestId) {
+      loading.value = false;
+    }
   }
 }
 
