@@ -2,6 +2,9 @@ import { computed, ref } from "vue";
 import { getRockets } from "@/services/rocketService";
 import type { Rocket } from "@/types/rocket";
 
+/** Custom rockets only exist in client memory, never on the API. */
+export const CUSTOM_ROCKET_ID_PREFIX = "custom-";
+
 const rockets = ref<Rocket[]>([]);
 const loading = ref(false);
 const error = ref<string | null>(null);
@@ -71,7 +74,7 @@ async function fetchRockets(force = false): Promise<void> {
 function addRocket(rocket: Omit<Rocket, "id">): void {
   const newRocket: Rocket = {
     ...rocket,
-    id: `custom-${Date.now()}`,
+    id: `${CUSTOM_ROCKET_ID_PREFIX}${Date.now()}`,
     isCustom: true,
   };
 
