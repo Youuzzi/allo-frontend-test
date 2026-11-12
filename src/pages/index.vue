@@ -17,7 +17,7 @@
         <div
           class="d-flex flex-column flex-md-row justify-space-between align-md-end ga-6"
         >
-          <div>
+          <div class="catalogue-intro">
             <h1 class="text-h3 text-md-h2 font-weight-bold mb-3">
               Rocket Catalogue
             </h1>
@@ -206,11 +206,11 @@ onMounted(() => {
   background: #fafbfc;
 }
 
-.catalogue-header {
-  max-width: 900px;
+.catalogue-intro {
+  max-width: 720px;
 }
 
-.catalogue-header h1 {
+.catalogue-intro h1 {
   letter-spacing: -1.5px;
 }
 
